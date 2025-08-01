@@ -91,7 +91,7 @@ def select_action(policy_net, state):
         place_log_prob = place_dist.log_prob(place_sample)
         height_log_prob = torch.distributions.Normal(height_probs, 0.1).log_prob(height_probs)
         tilt_log_prob = torch.distributions.Normal(tilt_vals, 0.1).log_prob(tilt_vals)
-        azimuth_log_prob = torch.distributions.Normal(azimuth_vals, 0.1).log_prob(azimuth_vals)
+        azimuth_log_prob = torch.distributions.Normal(azimuth_vals, 0.5).log_prob(azimuth_vals) # bigger std for exploration
         total_log_prob = place_log_prob + height_log_prob + tilt_log_prob + azimuth_log_prob
         
         # return action, total_log_prob, logits, place_probs, place_dist.entropy()
@@ -249,7 +249,10 @@ for episode in range(NUM_EPISODES):
     rsrp_maps = []            # New: Store RSRP maps for visualization
     episode_rsrp_map = None
 
+
     while not done:
+
+        print(f"Step # : {env.current_step} of episode {episode}")
         # Get action and value
         action_data = select_action(policy_net, state)
 
@@ -261,8 +264,10 @@ for episode in range(NUM_EPISODES):
         
         # Step environment
         next_state, reward, done, info = env.step(action_data['action_dict'])
+
+        print(f"Current reward: {reward} ")
         episode_rewards.append(reward)
-        
+            
         print(f"Step environment for episode : {episode}")
 
         # Store transition
@@ -276,24 +281,22 @@ for episode in range(NUM_EPISODES):
             value
         ))
 
-        print(f"Current state of replay buffer : {replay_buffer} ")
         if done and 'rsrp_map' in info:
             episode_rsrp_map = info['rsrp_map']
-        
+
         state = next_state
         # Track active sites
         active_mask = action_data['action_dict']['placement'] > 0.5
         active_sites = [i for i, active in enumerate(active_mask) if active]
         active_sites_history.append(active_sites)
 
-        print(f"Active sites for episode : {episode}")
+        print(f"Active sites for episode : {len(active_sites)}")
 
         
         # Capture final RSRP map
         if done and 'rsrp_map' in info:
             episode_rsrp_map = info['rsrp_map']
     
-    log_episode(episode, total_reward, active_sites_history[-1], rsrp_maps[-1])
 
     # Update networks
     ppo_update()
@@ -314,6 +317,10 @@ for episode in range(NUM_EPISODES):
         # Visualize and save models
         torch.save(policy_net.state_dict(), f"ppo_gnn_policy_{episode}.pth")
         torch.save(value_net.state_dict(), f"ppo_gnn_value_{episode}.pth")
+
+
+    # log_episode(episode, total_reward, active_sites_history[-1], rsrp_maps[-1])
+
 
 # Plot training progress
 plt.figure(figsize=(12, 4))

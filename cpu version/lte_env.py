@@ -14,6 +14,8 @@ class LTEPlannerEnv(gym.Env):
         self.resolution = resolution
         self.num_nodes = len(candidate_positions)
         self.coverage_target = 0.95  # Target coverage percentage
+        self.max_steps_per_episode = 10
+        self.current_step = 0  # Internal step counter
 
 
     # Action space
@@ -34,10 +36,12 @@ class LTEPlannerEnv(gym.Env):
         })
 
     def reset(self):
+        self.current_step = 0
         self.active_nodes = np.zeros((self.num_nodes, 4))
         return self._get_state()
 
     def step(self, action):
+        self.current_step += 1
         # Process action
         # print(action)
         placements = action["placement"]
@@ -59,7 +63,7 @@ class LTEPlannerEnv(gym.Env):
         # Termination
         done = (
             coverage >= self.coverage_target or
-            self.steps >= 20  # Max steps per episode
+            self.current_step >= self.max_steps_per_episode  # Max steps per episode
         )
 
         info = {
