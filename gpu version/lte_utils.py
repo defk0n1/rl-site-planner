@@ -53,8 +53,11 @@ def sectorized_path_loss(d, f, h_b, h_m, clutter_class, azimuth, user_azimuth, t
 def compute_rsrp_map(clutter_map, candidate_positions, configs, 
                      tx_power_dbm=15.2, freq_mhz=1800, h_m=1.5, 
                      clutter_lookup=None, resolution=1.0):
+
     
+    print(configs)
     h, w = clutter_map.shape
+    print("clutter_map shape:" , clutter_map.shape)
     rsrp_map = torch.full((h, w), -150.0, dtype=torch.float, device=device)
     
     yy, xx = torch.meshgrid(torch.arange(h, device=device), torch.arange(w, device=device), indexing='ij')
@@ -63,6 +66,8 @@ def compute_rsrp_map(clutter_map, candidate_positions, configs,
     for idx, ((x, y), (place, height, tilt, azimuth)) in enumerate(zip(candidate_positions, configs)):
         if place < 0.5:
             continue
+
+        print("(x,y): ", x , y)
             
         tx_pos = torch.tensor([x, y], dtype=torch.float, device=device)
         distances = torch.norm(user_positions - tx_pos, dim=1) * resolution
@@ -72,7 +77,7 @@ def compute_rsrp_map(clutter_map, candidate_positions, configs,
         dy = user_positions[:, 1] - y
         user_azimuths = torch.remainder(torch.rad2deg(torch.atan2(dy, dx)), 360)
 
-        clutter_type = clutter_lookup[int(clutter_map[y, x])][0]
+        clutter_type = clutter_lookup[int(clutter_map[int(y), int(x)])][0]
 
         d = distances_km
         f = torch.tensor(freq_mhz, dtype=torch.float, device=device)
