@@ -52,12 +52,13 @@ def sectorized_path_loss(d, f, h_b, h_m, clutter_class, azimuth, user_azimuth, t
 
 def compute_rsrp_map(clutter_map, candidate_positions, configs, 
                      tx_power_dbm=15.2, freq_mhz=1800, h_m=1.5, 
-                     clutter_lookup=None, resolution=1.0):
+                     clutter_lookup=None, resolution=1.0,
+                     testing=False):
 
-    
-    print(configs)
+    # print(clutter_lookup)
+    # print(configs)
     h, w = clutter_map.shape
-    print("clutter_map shape:" , clutter_map.shape)
+    # print("clutter_map shape:" , clutter_map.shape)
     rsrp_map = torch.full((h, w), -150.0, dtype=torch.float, device=device)
     
     yy, xx = torch.meshgrid(torch.arange(h, device=device), torch.arange(w, device=device), indexing='ij')
@@ -67,7 +68,7 @@ def compute_rsrp_map(clutter_map, candidate_positions, configs,
         if place < 0.5:
             continue
 
-        print("(x,y): ", x , y)
+        # print("(x,y): ", x , y)
             
         tx_pos = torch.tensor([x, y], dtype=torch.float, device=device)
         distances = torch.norm(user_positions - tx_pos, dim=1) * resolution
@@ -76,8 +77,10 @@ def compute_rsrp_map(clutter_map, candidate_positions, configs,
         dx = user_positions[:, 0] - x
         dy = user_positions[:, 1] - y
         user_azimuths = torch.remainder(torch.rad2deg(torch.atan2(dy, dx)), 360)
+        
+        # print("ERROR HERE : " , int(clutter_map[int(y), int(x)]))
 
-        clutter_type = clutter_lookup[int(clutter_map[int(y), int(x)])][0]
+        clutter_type = clutter_lookup[int(clutter_map[int(y), int(x)])]
 
         d = distances_km
         f = torch.tensor(freq_mhz, dtype=torch.float, device=device)
@@ -102,7 +105,9 @@ def compute_rsrp_map(clutter_map, candidate_positions, configs,
         # print(clutter_lookup)
 
 
-        clutter_loss = torch.tensor([clutter_lookup[cid][1] for cid in user_clutter.cpu().numpy()], dtype=torch.float, device=device)
+        clutter_loss = torch.tensor([clutter_lookup[cid][1] for cid in user_clutter.cpu().numpy()], dtype=torch.float, device=device) if not testing else torch.tensor([clutter_lookup[cid][1] for cid in user_clutter], dtype=torch.float, device=device)
+
+
 
         received_power = tx_power_dbm - path_loss - clutter_loss
         rsrp_map = torch.maximum(rsrp_map.flatten(), received_power).reshape((h, w))

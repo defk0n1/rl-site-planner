@@ -23,7 +23,8 @@ class LTEPlannerEnv(gym.Env):
             "placement": spaces.MultiBinary(self.num_nodes),
             "height": spaces.Box(low=0, high=1, shape=(self.num_nodes,)),
             "tilt": spaces.Box(low=0, high=1, shape=(self.num_nodes,)),
-            "azimuth": spaces.Box(low=0, high=1, shape=(self.num_nodes,))
+            # "azimuth": spaces.Box(low=0, high=1, shape=(self.num_nodes,))
+            "azimuth":spaces.MultiDiscrete([71] * self.num_nodes)
         })
 
         self.observation_space = spaces.Dict({
@@ -50,7 +51,8 @@ class LTEPlannerEnv(gym.Env):
             torch.tensor(28.0, device=device)
         )
         tilt = torch.tensor(action["tilt"], device=device) * 12.0
-        azimuth = torch.tensor(action["azimuth"], device=device) * 360.0
+        azimuth = torch.tensor(action["azimuth"], device=device) * 5.0
+
 
         processed_action = torch.stack([placement, height, tilt, azimuth], dim=1)
 

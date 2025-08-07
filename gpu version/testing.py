@@ -155,7 +155,7 @@ print(action)
 _, reward, _, _ = env.step(action)
 
 print(f"\n📈 Reward on new map: {reward:.2f}")
-print(f"📍 Active Transmitters: { int(action["placement"].sum()) } / {len(candidate_positions)}")
+print(f"📍 Active Transmitters: {int(action["placement"].sum()) } / {len(candidate_positions)}")
  
 # === Plotting ===
 def plot_transmitters(clutter_map, candidate_positions, action, title="Transmitter Placement"):
@@ -179,22 +179,25 @@ print("processed_action :", processed_action)
 
 
 # === Visualize RSRP and SINR maps ===
-rsrp_map = compute_rsrp_map(clutter_map, candidate_positions, processed_action, clutter_lookup)
-# sinr_map = compute_sinr_map(rsrp_map, candidate_positions, action)
+rsrp_map = compute_rsrp_map(clutter_map, candidate_positions, processed_action, clutter_lookup = clutter_lookup , testing = True)
+sinr_map = compute_sinr_map(rsrp_map, candidate_positions, action)
 
+print(rsrp_map)
 
 print("\nCoverage Statistics:")
-print(f"- Area > -95dBm: {(rsrp_map > -95).mean()*100:.1f}%")
-print(f"- Area > -100dBm: {(rsrp_map > -100).mean()*100:.1f}%")
+print(f"- Area > -95dBm: {(rsrp_map > -95).float().mean()*100:.1f}%")
+print(f"- Area > -100dBm: {(rsrp_map > -100).float().mean()*100:.1f}%")
+
+
 
 plt.figure(figsize=(6, 5))
-plt.imshow(rsrp_map, cmap='viridis', origin='lower')
-plt.title("RSRP Map (dBm)")
+plt.imshow(rsrp_map.detach().cpu(), cmap='viridis', origin='lower')
+plt.title("RSRP Map (dBm)") 
 plt.colorbar()
 plt.show()
 
 # plt.figure(figsize=(6, 5))
-# plt.imshow(sinr_map, cmap='plasma', origin='lower')
+# plt.imshow(sinr_map.detach().cpu(), cmap='plasma', origin='lower')
 # plt.title("SINR Map (dB)")
 # plt.colorbar()
 # plt.show()
