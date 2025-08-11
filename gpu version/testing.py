@@ -91,7 +91,7 @@ gpu_clutter_map = torch.Tensor(clutter_map).to(device)
 
 # === Candidate transmitter positions on a grid ===
 gpu_candidate_positions =torch.Tensor( [(x, y) for x in range(50, 450, 100) for y in range(50, 450, 100)]).to(device)
-candidate_positions = [(x, y) for x in range(50, 450, 100) for y in range(50, 450, 100)]
+candidate_positions = [(x, y) for x in range(50, 500, 100) for y in range(50, 500, 100)]
 
 # === Clutter mapping (merged) ===
 clutter_to_env = {
@@ -180,7 +180,7 @@ print("processed_action :", processed_action)
 
 # === Visualize RSRP and SINR maps ===
 rsrp_map = compute_rsrp_map(clutter_map, candidate_positions, processed_action, clutter_lookup = clutter_lookup , testing = True)
-sinr_map = compute_sinr_map(rsrp_map, candidate_positions, action)
+# sinr_map = compute_sinr_map(rsrp_map, candidate_positions, action)
 
 print(rsrp_map)
 

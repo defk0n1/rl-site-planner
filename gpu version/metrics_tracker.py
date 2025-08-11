@@ -8,8 +8,7 @@ class MetricsTracker:
         self.csv_path = os.path.join(log_dir, csv_name)
         self.use_tensorboard = use_tensorboard
         os.makedirs(log_dir, exist_ok=True)
-        self.metrics = []  # <-- ADD THIS
-
+        self.metrics = []  
 
         if not os.path.exists(self.csv_path):
             with open(self.csv_path, mode="w", newline="") as f:
