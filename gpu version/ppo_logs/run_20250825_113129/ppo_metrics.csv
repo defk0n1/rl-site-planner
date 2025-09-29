@@ -1,0 +1,3 @@
+episode,reward,entropy,kl_div,variance
+0,"tensor(1.6921, device='cuda:0')",140.1815948486328,0.0,107.517333984375
+1,"tensor(1.7922, device='cuda:0')",140.1815948486328,0.0,105.64970397949219

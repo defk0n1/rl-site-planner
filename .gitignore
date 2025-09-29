@@ -1,0 +1,5 @@
+ppo_gnn_*
+gnn_policy_*
+gpu version/ppo_logs
+gpu version/sq_centroid_kmz
+*.npy

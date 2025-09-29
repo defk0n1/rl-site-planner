@@ -1,0 +1,4 @@
+C:\Users\g50052812\Desktop\assets\LibyaMap\clutter\LIBYA_clut_1_1.bin -60700.0 747300.0 2931850.0 3685700.0 50.0
+C:\Users\g50052812\Desktop\assets\LibyaMap\clutter\LIBYA_clut_1_2.bin 747300.0 1555300.0 2931850.0 3685700.0 50.0
+C:\Users\g50052812\Desktop\assets\LibyaMap\clutter\LIBYA_clut_2_1.bin -60700.0 747300.0 2178000.0 2931850.0 50.0
+C:\Users\g50052812\Desktop\assets\LibyaMap\clutter\LIBYA_clut_2_2.bin 747300.0 1555300.0 2178000.0 2931850.0 50.0
